@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -6,89 +5,355 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>字数计算器</title>
     <style>
+        :root {
+            --primary-color: #4dd0e1;
+            --primary-dark: #00bcd4;
+            --text-color: #333;
+            --bg-color: #ffffff;
+            --secondary-bg: #f5f5f5;
+            --border-color: #ccc;
+            --counter-color: #888;
+        }
+
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            background-color: #ffffff;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
+
+        body.dark-mode {
+            --primary-color: #00838f;
+            --primary-dark: #006064;
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --secondary-bg: #1e1e1e;
+            --border-color: #444;
+            --counter-color: #aaa;
+        }
+
         .container {
-            width: 80%;
-            max-width: 750px;
+            width: 90%;
+            max-width: 800px;
             text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background-color: var(--bg-color);
+            transition: background-color 0.3s;
         }
+
         h1 {
-            font-size: 3.2em;
+            font-size: 2.5em;
             font-weight: 300;
             margin-bottom: 15px;
-            color: #333;
+            color: var(--text-color);
         }
-        .counter {
-            margin-bottom: 30px;
-            color: #888;
-            font-size: 1.1em;
+
+        .count-displays {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 20px;
         }
+
+        .count-display {
+            background-color: var(--secondary-bg);
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            min-width: 150px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: var(--counter-color);
+            transition: background-color 0.3s;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 8px 15px;
+            margin: 0 5px;
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-color);
+        }
+
+        .mode-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
         textarea {
             width: 100%;
             height: 250px;
             padding: 20px;
-            border: 1px solid #4dd0e1;
+            border: 1px solid var(--primary-color);
             border-radius: 8px;
             resize: vertical;
             font-size: 18px;
             box-sizing: border-box;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             transition: all 0.3s ease;
             font-family: inherit;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
+
         textarea:focus {
             outline: none;
-            border-color: #00bcd4;
+            border-color: var(--primary-dark);
             box-shadow: 0 0 8px rgba(77, 208, 225, 0.4);
         }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
         button {
-            padding: 10px 35px;
-            background-color: #ffffff;
-            color: #666;
-            border: 1px solid #ccc;
+            padding: 10px 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
             border-radius: 25px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             font-family: inherit;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         button:hover {
-            background-color: #f5f5f5;
-            border-color: #bbb;
+            background-color: var(--secondary-bg);
+            border-color: var(--primary-color);
+        }
+
+        button i {
+            margin-right: 5px;
+        }
+
+        .mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .count-displays {
+                flex-direction: column;
+            }
+
+            .count-display {
+                width: 100%;
+                margin: 5px 0;
+            }
         }
     </style>
 </head>
 <body>
+    <button id="modeToggle" class="mode-toggle">🌙</button>
     <div class="container">
         <h1>字数计算器</h1>
-        <div class="counter" id="counter">你一共写了 0 字符。</div>
-        <textarea id="textInput"></textarea>
-        <button id="clearButton">清空</button>
+        
+        <div class="count-displays">
+            <div class="count-display" id="totalCount">
+                字符数: 0
+            </div>
+            <div class="count-display" id="wordCount">
+                单词数: 0
+            </div>
+            <div class="count-display" id="chineseCount">
+                中文字数: 0
+            </div>
+        </div>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" id="allChars">全部字符</button>
+            <button class="mode-btn" id="onlyChinese">只数中文</button>
+            <button class="mode-btn" id="onlyEnglish">只数英文</button>
+        </div>
+        
+        <textarea id="textInput" placeholder="在此输入文字..."></textarea>
+        
+        <div class="button-group">
+            <button id="copyButton">📋 复制</button>
+            <button id="clearButton">🗑️ 清空</button>
+        </div>
     </div>
+    
     <script>
         const textInput = document.getElementById('textInput');
-        const counter = document.getElementById('counter');
+        const totalCount = document.getElementById('totalCount');
+        const wordCount = document.getElementById('wordCount');
+        const chineseCount = document.getElementById('chineseCount');
+        const copyButton = document.getElementById('copyButton');
         const clearButton = document.getElementById('clearButton');
-        textInput.addEventListener('input', function() {
-            const text = this.value.replace(/\n\s*\n/g, '\n');
-            const count = text.replace(/\s/g, '').length;
-            counter.textContent = `你一共写了 ${count} 字符。`;
+        const modeToggle = document.getElementById('modeToggle');
+        
+        // 计数模式选择按钮
+        const allCharsBtn = document.getElementById('allChars');
+        const onlyChineseBtn = document.getElementById('onlyChinese');
+        const onlyEnglishBtn = document.getElementById('onlyEnglish');
+        
+        let countMode = 'all'; // 默认计数所有字符
+        
+        // 从localStorage恢复文本和设置
+        window.addEventListener('load', function() {
+            const savedText = localStorage.getItem('savedText');
+            if (savedText) {
+                textInput.value = savedText;
+                updateCounts();
+            }
+            
+            const savedMode = localStorage.getItem('countMode');
+            if (savedMode) {
+                countMode = savedMode;
+                updateModeButtons();
+            }
+            
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                modeToggle.textContent = '☀️';
+            }
         });
+        
+        // 实时更新字数统计
+        textInput.addEventListener('input', function() {
+            updateCounts();
+            
+            // 自动保存到localStorage
+            localStorage.setItem('savedText', this.value);
+        });
+        
+        // 更新所有计数
+        function updateCounts() {
+            const text = textInput.value;
+            
+            // 根据当前模式更新字符数
+            if (countMode === 'all') {
+                // 所有字符（不含空白字符和换行符）
+                const charCount = text.replace(/\s/g, '').length;
+                totalCount.textContent = `字符数: ${charCount}`;
+            } else if (countMode === 'chinese') {
+                // 只计算中文字符
+                const chineseMatch = text.match(/[\u4e00-\u9fa5]/g);
+                const chineseCounter = chineseMatch ? chineseMatch.length : 0;
+                totalCount.textContent = `中文字符数: ${chineseCounter}`;
+            } else if (countMode === 'english') {
+                // 只计算英文字符
+                const englishMatch = text.match(/[a-zA-Z]/g);
+                const englishCounter = englishMatch ? englishMatch.length : 0;
+                totalCount.textContent = `英文字符数: ${englishCounter}`;
+            }
+            
+            // 单词数（针对英文）
+            const wordMatch = text.match(/\b[a-zA-Z]+\b/g);
+            const wordCounter = wordMatch ? wordMatch.length : 0;
+            wordCount.textContent = `单词数: ${wordCounter}`;
+            
+            // 中文字数
+            const chineseMatch = text.match(/[\u4e00-\u9fa5]/g);
+            const chineseCounter = chineseMatch ? chineseMatch.length : 0;
+            chineseCount.textContent = `中文字数: ${chineseCounter}`;
+        }
+        
+        // 更新模式按钮的状态
+        function updateModeButtons() {
+            allCharsBtn.classList.remove('active');
+            onlyChineseBtn.classList.remove('active');
+            onlyEnglishBtn.classList.remove('active');
+            
+            if (countMode === 'all') {
+                allCharsBtn.classList.add('active');
+            } else if (countMode === 'chinese') {
+                onlyChineseBtn.classList.add('active');
+            } else if (countMode === 'english') {
+                onlyEnglishBtn.classList.add('active');
+            }
+            
+            updateCounts();
+        }
+        
+        // 模式选择事件监听
+        allCharsBtn.addEventListener('click', function() {
+            countMode = 'all';
+            localStorage.setItem('countMode', countMode);
+            updateModeButtons();
+        });
+        
+        onlyChineseBtn.addEventListener('click', function() {
+            countMode = 'chinese';
+            localStorage.setItem('countMode', countMode);
+            updateModeButtons();
+        });
+        
+        onlyEnglishBtn.addEventListener('click', function() {
+            countMode = 'english';
+            localStorage.setItem('countMode', countMode);
+            updateModeButtons();
+        });
+        
+        // 复制文本
+        copyButton.addEventListener('click', function() {
+            textInput.select();
+            document.execCommand('copy');
+            
+            // 显示复制成功提示
+            const originalText = copyButton.textContent;
+            copyButton.textContent = '✓ 已复制';
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+            }, 2000);
+        });
+        
+        // 清空文本
         clearButton.addEventListener('click', function() {
             textInput.value = '';
-            counter.textContent = '你一共写了 0 字符。';
+            updateCounts();
+            localStorage.removeItem('savedText');
             textInput.focus();
+        });
+        
+        // 切换深色/浅色模式
+        modeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            modeToggle.textContent = isDarkMode ? '☀️' : '🌙';
         });
     </script>
 </body>
 </html>
-```
-
