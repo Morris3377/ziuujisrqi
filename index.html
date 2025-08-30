@@ -1,3 +1,7 @@
+
+以下是移除注释后的代码：
+
+```html
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -6,7 +10,6 @@
     <title>字数计算器</title>
     <style>
         body {
-            /* 移除了 font-family 属性，让字体使用系统/浏览器默认 */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -42,7 +45,6 @@
             box-sizing: border-box;
             margin-bottom: 30px;
             transition: all 0.3s ease;
-            /* 让输入框内的字体也继承body的默认字体 */
             font-family: inherit;
         }
         textarea:focus {
@@ -58,7 +60,6 @@
             border-radius: 25px;
             cursor: pointer;
             font-size: 18px;
-            /* 让按钮的字体也继承body的默认字体 */
             font-family: inherit;
             transition: all 0.2s ease;
         }
@@ -80,9 +81,8 @@
         const counter = document.getElementById('counter');
         const clearButton = document.getElementById('clearButton');
         textInput.addEventListener('input', function() {
-            // 新的计数逻辑：移除空格和空行后计算字符数
-            const text = this.value.replace(/\n\s*\n/g, '\n'); // 将空行替换为单个换行符
-            const count = text.replace(/\s/g, '').length; // 移除所有空白字符后计算长度
+            const text = this.value.replace(/\n\s*\n/g, '\n');
+            const count = text.replace(/\s/g, '').length;
             counter.textContent = `你一共写了 ${count} 字符。`;
         });
         clearButton.addEventListener('click', function() {
@@ -93,3 +93,4 @@
     </script>
 </body>
 </html>
+```
